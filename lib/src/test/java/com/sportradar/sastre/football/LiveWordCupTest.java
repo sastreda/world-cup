@@ -52,7 +52,7 @@ class LiveWordCupTest {
     void shouldUpdateMatch() throws WordCupException {
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
-        logger.debug("Sumary {}", liveWordCup.getSummary());
+        logger.debug("Summary {}", liveWordCup.getSummary());
     }
 
     @Test
@@ -87,13 +87,39 @@ class LiveWordCupTest {
     void shouldUpdateMatchWithAnulatedScore(){}
 */
     @Test
-    void shouldFinishMatch(){}
+    void shouldFinishMatch() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
+        liveWordCup.addMatch("Argentina","Spain");
+        int count = liveWordCup.getSummary().size();
+        logger.debug("Summary {}", liveWordCup.getSummary());
+        liveWordCup.finishMatch("Argentina", "Spain");
+        assertEquals(liveWordCup.getSummary().size(), count-1);
+    }
 
     @Test
-    void shouldFailFinishMatchWithWrongTeamName(){}
+    void shouldFailFinishMatchWithWrongTeamName() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
+        liveWordCup.addMatch("Argentina","Spain");
+        logger.debug("Summary {}", liveWordCup.getSummary());
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.finishMatch("Argentina8", "Spain");
+        });
+        assertTrue(exception.getMessage().contains("is not a valid classified country."));
+    }
 
     @Test
-    void shouldFailFinishMatchWithNonExistingMatch(){}
+    void shouldFailFinishMatchWithNonExistingMatch() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
+        liveWordCup.addMatch("Argentina","Spain");
+        logger.debug("Summary {}", liveWordCup.getSummary());
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.finishMatch("Canada", "Spain");
+        });
+        assertEquals("Match not found.", exception.getMessage());
+    }
 
     @Test
     void shouldShowEmptyScoreBoard(){

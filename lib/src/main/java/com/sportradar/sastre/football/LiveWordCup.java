@@ -21,6 +21,7 @@ public class LiveWordCup {
     }
 
     private List<Match> summary = new ArrayList<>();
+
     public void addMatch(String homeTeam, String awayTeam) throws WordCupException {
         logger.debug("add new match between {} and {}", homeTeam, awayTeam);
         logger.debug("sumary: {}", summary);
@@ -29,10 +30,9 @@ public class LiveWordCup {
         if (!homeCountryTeam.equals(awayCountryTeam)) {
             summary.add(new Match(homeCountryTeam, awayCountryTeam));
             logger.debug("The game between {} and {} has already started", homeTeam, awayTeam);
-        }else{
+        } else {
             throw new WordCupException("one country cannot play against itself");
         }
-
     }
 
     public void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore) throws WordCupException {
@@ -41,66 +41,72 @@ public class LiveWordCup {
             validateScores(homeScore, awayScore, match);
             match.setHomeScore(homeScore);
             match.setAwayScore(awayScore);
-        }catch (NoSuchElementException nsee){
+        } catch (NoSuchElementException nsee) {
             throw new WordCupException("Match not found.");
         }
     }
 
+    public void finishMatch(String homeTeam, String awayTeam) throws WordCupException {
+        try {
+            summary.remove(findMatch(homeTeam, awayTeam));
+        } catch (NoSuchElementException nsee) {
+            throw new WordCupException("Match not found.");
+        }
+    }
 
     /**
-     private void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore, boolean fix) {
-     validateTeamName();
-     validateScore();
-     }
+     * private void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore, boolean fix) {
+     * validateTeamName();
+     * validateScore();
+     * }
+     * <p>
+     * <p>
+     * public List<T> getLiveScoreBoard() {
+     * validateTeamName();
+     * validateScore();
+     * }
+     * public List<T> getSummary() {
+     * validateTeamName();
+     * validateScore();
+     * }
+     */
 
-    public void finishMatch(String homeTeam, String awayTeam) {
-
-    }
-    public List<T> getLiveScoreBoard() {
-        validateTeamName();
-        validateScore();
-    }
-    public List<T> getSummary() {
-        validateTeamName();
-        validateScore();
-    }*/
-
-    private void validateCountryIsNotPlaying(Country country) throws WordCupException{
+    private void validateCountryIsNotPlaying(Country country) throws WordCupException {
         if (summary.stream().filter(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))
-                .findFirst().isPresent()){
+                .findFirst().isPresent()) {
             throw new WordCupException(country + " is already playing.");
         }
     }
 
-    private Country validateAndReturnCountry(String countryString) throws WordCupException{
+    private Country validateAndReturnCountry(String countryString) throws WordCupException {
         Country country = validateCountryStringAndReturnCountry(countryString);
         if (summary.stream().filter(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))
-                .findFirst().isPresent()){
+                .findFirst().isPresent()) {
             throw new WordCupException(country + " is already playing.");
         }
-        return  country;
+        return country;
     }
 
     private Match findMatch(String homeTeam, String awayTeam) throws WordCupException {
         Country countryHomeTeam = validateCountryStringAndReturnCountry(homeTeam);
         Country countryAwayTeam = validateCountryStringAndReturnCountry(awayTeam);
         return summary.stream().filter(m -> m.getHomeTeam().equals(countryHomeTeam)
-            && m.getAwayTeam().equals(countryAwayTeam)).findFirst().orElseThrow();
+                && m.getAwayTeam().equals(countryAwayTeam)).findFirst().orElseThrow();
     }
 
     private Country validateCountryStringAndReturnCountry(String countryString) throws WordCupException {
-        try{
+        try {
             return Country.valueOf(countryString.toUpperCase());
-        }catch (IllegalArgumentException e){
-            throw new WordCupException(countryString +" is not a valid classified country.");
+        } catch (IllegalArgumentException e) {
+            throw new WordCupException(countryString + " is not a valid classified country.");
         }
     }
 
     private void validateScores(int homeScore, int awayScore, Match match) throws WordCupException {
-        if (Integer.signum(homeScore) == -1 || Integer.signum(awayScore) == -1){
+        if (Integer.signum(homeScore) == -1 || Integer.signum(awayScore) == -1) {
             throw new WordCupException("Scores cannot be negative.");
         }
-        if (match.getHomeScore() > homeScore || match.getAwayScore() > awayScore){
+        if (match.getHomeScore() > homeScore || match.getAwayScore() > awayScore) {
             throw new WordCupException("Scores cannot decrease.");
         }
     }
