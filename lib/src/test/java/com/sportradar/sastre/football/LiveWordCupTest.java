@@ -49,20 +49,43 @@ class LiveWordCupTest {
     }
 
     @Test
-    void shouldUpdateMatch(){}
+    void shouldUpdateMatch() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
+        logger.debug("Sumary {}", liveWordCup.getSummary());
+    }
 
     @Test
-    void shouldFailUpdatingNonExistingMatch(){}
+    void shouldFailUpdatingNonExistingMatch() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.updateMatch("Spain", 2,"Canada", 4);
+        });
+        assertEquals("Match not found.", exception.getMessage());
+    }
 
     @Test
-    void shouldFailUpdatingMatchWithWrongScore(){}
+    void shouldFailUpdatingMatchWithNegativeScore() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.updateMatch("Mexico", -1,"Canada", 4);
+        });
+        assertEquals("Scores cannot be negative.", exception.getMessage());
+    }
 
     @Test
-    void shouldFailUpdateMatchWithDecreasingScore(){}
-
+    void shouldFailUpdateMatchWithDecreasingScore() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.updateMatch("Mexico", 1,"Canada", 4);
+        });
+        assertEquals("Scores cannot decrease.", exception.getMessage());
+    }
+/**
     @Test
     void shouldUpdateMatchWithAnulatedScore(){}
-
+*/
     @Test
     void shouldFinishMatch(){}
 
@@ -73,7 +96,9 @@ class LiveWordCupTest {
     void shouldFailFinishMatchWithNonExistingMatch(){}
 
     @Test
-    void shouldShowEmptyScoreBoard(){}
+    void shouldShowEmptyScoreBoard(){
+
+    }
 
     @Test
     void shouldShowScoreSortedBoard(){}

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class LiveWordCup {
     Logger logger = LogManager.getRootLogger();
@@ -22,32 +23,38 @@ public class LiveWordCup {
     private List<Match> summary = new ArrayList<>();
     public void addMatch(String homeTeam, String awayTeam) throws WordCupException {
         logger.debug("add new match between {} and {}", homeTeam, awayTeam);
-        if (summary.isEmpty()){
-            logger.debug("adding first match to the board");
-        }
         logger.debug("sumary: {}", summary);
         Country homeCountryTeam = validateAndReturnCountry(homeTeam);
         Country awayCountryTeam = validateAndReturnCountry(awayTeam);
-        validateCountryIsNotPlaying(homeCountryTeam);
-        validateCountryIsNotPlaying(awayCountryTeam);
-        summary.add(new Match(homeCountryTeam,awayCountryTeam));
-        logger.debug("The game between {} and {} has already started", homeTeam, awayTeam);
+        if (!homeCountryTeam.equals(awayCountryTeam)) {
+            summary.add(new Match(homeCountryTeam, awayCountryTeam));
+            logger.debug("The game between {} and {} has already started", homeTeam, awayTeam);
+        }else{
+            throw new WordCupException("one country cannot play against itself");
+        }
+
     }
 
-/**
-    public void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore) {
-        validateTeamName();
-        validateScore();
+    public void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore) throws WordCupException {
+        try {
+            Match match = findMatch(homeTeam, awayTeam);
+            validateScores(homeScore, awayScore, match);
+            match.setHomeScore(homeScore);
+            match.setAwayScore(awayScore);
+        }catch (NoSuchElementException nsee){
+            throw new WordCupException("Match not found.");
+        }
     }
 
+
+    /**
      private void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore, boolean fix) {
      validateTeamName();
      validateScore();
      }
 
     public void finishMatch(String homeTeam, String awayTeam) {
-        validateTeamName();
-        validateScore();
+
     }
     public List<T> getLiveScoreBoard() {
         validateTeamName();
@@ -65,11 +72,36 @@ public class LiveWordCup {
         }
     }
 
-    private Country validateAndReturnCountry(String country) throws WordCupException{
+    private Country validateAndReturnCountry(String countryString) throws WordCupException{
+        Country country = validateCountryStringAndReturnCountry(countryString);
+        if (summary.stream().filter(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))
+                .findFirst().isPresent()){
+            throw new WordCupException(country + " is already playing.");
+        }
+        return  country;
+    }
+
+    private Match findMatch(String homeTeam, String awayTeam) throws WordCupException {
+        Country countryHomeTeam = validateCountryStringAndReturnCountry(homeTeam);
+        Country countryAwayTeam = validateCountryStringAndReturnCountry(awayTeam);
+        return summary.stream().filter(m -> m.getHomeTeam().equals(countryHomeTeam)
+            && m.getAwayTeam().equals(countryAwayTeam)).findFirst().orElseThrow();
+    }
+
+    private Country validateCountryStringAndReturnCountry(String countryString) throws WordCupException {
         try{
-            return Country.valueOf(country.toUpperCase());
+            return Country.valueOf(countryString.toUpperCase());
         }catch (IllegalArgumentException e){
-            throw new WordCupException(country +" is not a valid classified country.");
+            throw new WordCupException(countryString +" is not a valid classified country.");
+        }
+    }
+
+    private void validateScores(int homeScore, int awayScore, Match match) throws WordCupException {
+        if (Integer.signum(homeScore) == -1 || Integer.signum(awayScore) == -1){
+            throw new WordCupException("Scores cannot be negative.");
+        }
+        if (match.getHomeScore() > homeScore || match.getAwayScore() > awayScore){
+            throw new WordCupException("Scores cannot decrease.");
         }
     }
 }

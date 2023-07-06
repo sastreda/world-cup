@@ -36,6 +36,14 @@ public class Match {
         return awayScore;
     }
 
+    public void setHomeScore(int homeScore) {
+        this.homeScore = homeScore;
+    }
+
+    public void setAwayScore(int awayScore) {
+        this.awayScore = awayScore;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder().append(homeTeam).append(" ").append(homeScore).append(" : ")
