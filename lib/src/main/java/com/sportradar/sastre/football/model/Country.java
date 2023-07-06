@@ -1,4 +1,4 @@
-package com.sportradar.sastre.football;
+package com.sportradar.sastre.football.model;
 
 public enum Country {
     MEXICO,

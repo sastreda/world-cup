@@ -3,32 +3,50 @@
  */
 package com.sportradar.sastre.football;
 
+import com.sportradar.sastre.football.exception.WordCupException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LiveWordCupTest {
 
     LiveWordCup liveWordCup = new LiveWordCup();
+
+    Logger logger = LogManager.getRootLogger();
     @Test
     void shouldCreateMatchOnEmptyBoard() throws Exception {
         int count = liveWordCup.getSummary().size();
         liveWordCup.addMatch("Mexico","Canada");
-
-        //assert sumary has one more country
+        logger.debug("Sumary {}", liveWordCup.getSummary());
+        assertEquals(liveWordCup.getSummary().size(), count+1);
     }
 
     @Test
     void shouldAddMatchOnExistingBoard() throws Exception {
+        liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.addMatch("Spain","Brazil");
+        logger.debug("Sumary {}", liveWordCup.getSummary());
     }
 
     @Test
-    void shouldFailCreateMatchWithWrongTeamName(){}
+    void shouldFailCreateMatchWithWrongTeamName() throws WordCupException{
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.addMatch("Mexico5","Canada");
+        });
+        assertTrue(exception.getMessage().contains("is not a valid classified country."));
+    }
 
     @Test
-    void shouldFailCreateAlreadyCreatedMatch(){}
-
-    @Test
-    void shouldFailCreateMatchWithWrongScore(){}
+    void shouldFailCreateAlreadyCreatedMatch() throws WordCupException{
+        liveWordCup.addMatch("Mexico","Canada");
+        Exception exception = assertThrows(WordCupException.class, () -> {
+            liveWordCup.addMatch("Spain","Mexico");
+        });
+        assertEquals("MEXICO is already playing.", exception.getMessage());
+    }
 
     @Test
     void shouldUpdateMatch(){}

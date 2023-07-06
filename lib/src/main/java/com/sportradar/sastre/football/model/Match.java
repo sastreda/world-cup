@@ -1,7 +1,5 @@
 package com.sportradar.sastre.football.model;
 
-import com.sportradar.sastre.football.Country;
-
 import java.sql.Timestamp;
 import java.time.Instant;
 
@@ -12,21 +10,37 @@ public class Match {
     Country awayTeam;
     int awayScore;
 
-    public Match (String homeTeam, String awayTeam){
+    public Match (Country homeTeam, Country awayTeam){
         this.startDate = Timestamp.from(Instant.now());
-        this.homeTeam = Country.valueOf(homeTeam.toUpperCase());
-        this.awayTeam = Country.valueOf(awayTeam.toUpperCase());
-        this.homeScore = 0;
-        this.awayScore = 0;
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+    }
+
+    public Timestamp getStartDate() {
+        return startDate;
+    }
+
+    public Country getHomeTeam() {
+        return homeTeam;
+    }
+
+    public int getHomeScore() {
+        return homeScore;
+    }
+
+    public Country getAwayTeam() {
+        return awayTeam;
+    }
+
+    public int getAwayScore() {
+        return awayScore;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return new StringBuilder().append(homeTeam).append(" ").append(homeScore).append(" : ")
+                .append(awayTeam).append(" ").append(awayScore)
+                .toString();
     }
-
     //TODO compare --> 1. goals 2. most recent started first
-
-    //TODO override isEqual
-    // a == a and a == b or a == b and b==a
 }
