@@ -28,6 +28,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:30.1.1-jre'
 }
+version = '0.1.0'
 
 tasks.named('test') {
     // Use JUnit Platform for unit tests.

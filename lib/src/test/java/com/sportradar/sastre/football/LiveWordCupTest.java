@@ -32,19 +32,15 @@ class LiveWordCupTest {
     }
 
     @Test
-    void shouldFailCreateMatchWithWrongTeamName() throws WordCupException{
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.addMatch("Mexico5","Canada");
-        });
+    void shouldFailCreateMatchWithWrongTeamName() {
+        Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.addMatch("Mexico5", "Canada"));
         assertTrue(exception.getMessage().contains("is not a valid classified country."));
     }
 
     @Test
     void shouldFailCreateAlreadyCreatedMatch() throws WordCupException{
         liveWordCup.addMatch("Mexico","Canada");
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.addMatch("Spain","Mexico");
-        });
+        Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.addMatch("Spain", "Mexico"));
         assertEquals("MEXICO is already playing.", exception.getMessage());
     }
 
@@ -58,18 +54,15 @@ class LiveWordCupTest {
     @Test
     void shouldFailUpdatingNonExistingMatch() throws WordCupException {
         liveWordCup.addMatch("Mexico","Canada");
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.updateMatch("Spain", 2,"Canada", 4);
-        });
+        Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.updateMatch("Spain", 2, "Canada", 4));
         assertEquals("Match not found.", exception.getMessage());
     }
 
     @Test
     void shouldFailUpdatingMatchWithNegativeScore() throws WordCupException {
         liveWordCup.addMatch("Mexico","Canada");
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.updateMatch("Mexico", -1,"Canada", 4);
-        });
+        Exception exception = assertThrows(WordCupException.class,
+                () -> liveWordCup.updateMatch("Mexico", -1,"Canada", 4));
         assertEquals("Scores cannot be negative.", exception.getMessage());
     }
 
@@ -77,15 +70,11 @@ class LiveWordCupTest {
     void shouldFailUpdateMatchWithDecreasingScore() throws WordCupException {
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.updateMatch("Mexico", 1,"Canada", 4);
-        });
+        Exception exception = assertThrows(WordCupException.class,
+                () -> liveWordCup.updateMatch("Mexico", 1,"Canada", 4));
         assertEquals("Scores cannot decrease.", exception.getMessage());
     }
-/**
-    @Test
-    void shouldUpdateMatchWithAnulatedScore(){}
-*/
+
     @Test
     void shouldFinishMatch() throws WordCupException {
         liveWordCup.addMatch("Mexico","Canada");
@@ -103,9 +92,7 @@ class LiveWordCupTest {
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         liveWordCup.addMatch("Argentina","Spain");
         logger.debug("Summary {}", liveWordCup.getSummary());
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.finishMatch("Argentina8", "Spain");
-        });
+        Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.finishMatch("Argentina8", "Spain"));
         assertTrue(exception.getMessage().contains("is not a valid classified country."));
     }
 
@@ -115,19 +102,45 @@ class LiveWordCupTest {
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         liveWordCup.addMatch("Argentina","Spain");
         logger.debug("Summary {}", liveWordCup.getSummary());
-        Exception exception = assertThrows(WordCupException.class, () -> {
-            liveWordCup.finishMatch("Canada", "Spain");
-        });
+        Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.finishMatch("Canada", "Spain"));
         assertEquals("Match not found.", exception.getMessage());
     }
 
     @Test
     void shouldShowEmptyScoreBoard(){
-
+        logger.debug("Summary {}", liveWordCup.getSummary());
     }
 
     @Test
-    void shouldShowScoreSortedBoard(){}
+    void shouldShowScoreSortedBoard() throws WordCupException {
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.addMatch("Spain","Brazil");
+        liveWordCup.addMatch("Germany","France");
+        liveWordCup.addMatch("Uruguay","Italy");
+        liveWordCup.addMatch("Argentina","Australia");
 
+        liveWordCup.updateMatch("Mexico",0,"Canada",5);
+        liveWordCup.updateMatch("Spain",10,"Brazil",2);
+        liveWordCup.updateMatch("Germany",2,"France",2);
+        liveWordCup.updateMatch("Uruguay",6,"Italy",6);
+        liveWordCup.updateMatch("Argentina",3,"Australia",1);
+
+        logger.debug(liveWordCup.getSortedSummary());
+    }
+
+    @Test
+    void shouldShowScoreSortedBoard2() throws WordCupException {
+        liveWordCup.addMatch("Uruguay","Italy");
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.addMatch("Spain","Brazil");
+        liveWordCup.addMatch("Germany","France");
+        liveWordCup.addMatch("Argentina","Australia");
+        liveWordCup.updateMatch("Mexico",0,"Canada",5);
+        liveWordCup.updateMatch("Spain",10,"Brazil",2);
+        liveWordCup.updateMatch("Germany",2,"France",2);
+        liveWordCup.updateMatch("Uruguay",6,"Italy",6);
+        liveWordCup.updateMatch("Argentina",3,"Australia",1);
+        logger.debug(liveWordCup.getSortedSummary());
+    }
 
 }

@@ -3,7 +3,7 @@ package com.sportradar.sastre.football.model;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-public class Match {
+public class Match implements Comparable<Match>{
     Timestamp startDate;
     Country homeTeam;
     int homeScore;
@@ -46,9 +46,17 @@ public class Match {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(homeTeam).append(" ").append(homeScore).append(" : ")
-                .append(awayTeam).append(" ").append(awayScore)
-                .toString();
+        return homeTeam + " " + homeScore + " : " + awayTeam + " " + awayScore;
     }
-    //TODO compare --> 1. goals 2. most recent started first
+
+    @Override
+    public int compareTo(Match o) {
+        int value = Integer.compare(o.homeScore + o.awayScore, homeScore + awayScore);
+        if (value != 0) {
+            return value;
+        }
+        else {
+            return o.getStartDate().compareTo(startDate);
+        }
+    }
 }

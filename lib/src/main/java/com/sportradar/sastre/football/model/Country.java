@@ -6,6 +6,7 @@ public enum Country {
     SPAIN,
     BRAZIL,
     GERMANY,
+    FRANCE,
     URUGUAY,
     ITALY,
     ARGENTINA,
