@@ -20,7 +20,7 @@ public class LiveWordCup {
         return summary;
     }
 
-    private List<Match> summary = new ArrayList<>();
+    private final List<Match> summary = new ArrayList<>();
 
     public void addMatch(String homeTeam, String awayTeam) throws WordCupException {
         logger.debug("add new match between {} and {}", homeTeam, awayTeam);
@@ -53,23 +53,6 @@ public class LiveWordCup {
             throw new WordCupException("Match not found.");
         }
     }
-
-    /**
-     * private void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore, boolean fix) {
-     * validateTeamName();
-     * validateScore();
-     * }
-     * <p>
-     * <p>
-     * public List<T> getLiveScoreBoard() {
-     * validateTeamName();
-     * validateScore();
-     * }
-     * public List<T> getSummary() {
-     * validateTeamName();
-     * validateScore();
-     * }
-     */
 
     public List<Match> getSortedSummary(){
         return summary.stream().sorted().toList();

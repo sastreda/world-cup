@@ -46,7 +46,7 @@ public class Match implements Comparable<Match>{
 
     @Override
     public String toString() {
-        return homeTeam + " " + homeScore + " : " + awayTeam + " " + awayScore;
+        return homeTeam.getDescription() + " " + homeScore + " : " + awayTeam.getDescription() + " " + awayScore;
     }
 
     @Override

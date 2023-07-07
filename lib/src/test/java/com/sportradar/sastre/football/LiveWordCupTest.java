@@ -20,7 +20,7 @@ class LiveWordCupTest {
     void shouldCreateMatchOnEmptyBoard() throws Exception {
         int count = liveWordCup.getSummary().size();
         liveWordCup.addMatch("Mexico","Canada");
-        logger.debug("Sumary {}", liveWordCup.getSummary());
+        logger.debug("Summary {}", liveWordCup.getSummary());
         assertEquals(liveWordCup.getSummary().size(), count+1);
     }
 
@@ -28,7 +28,7 @@ class LiveWordCupTest {
     void shouldAddMatchOnExistingBoard() throws Exception {
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.addMatch("Spain","Brazil");
-        logger.debug("Sumary {}", liveWordCup.getSummary());
+        logger.debug("Summary {}", liveWordCup.getSummary());
     }
 
     @Test
@@ -49,6 +49,7 @@ class LiveWordCupTest {
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         logger.debug("Summary {}", liveWordCup.getSummary());
+        //TODO add assert
     }
 
     @Test
@@ -109,6 +110,7 @@ class LiveWordCupTest {
     @Test
     void shouldShowEmptyScoreBoard(){
         logger.debug("Summary {}", liveWordCup.getSummary());
+        //assert size is 0
     }
 
     @Test
@@ -126,6 +128,7 @@ class LiveWordCupTest {
         liveWordCup.updateMatch("Argentina",3,"Australia",1);
 
         logger.debug(liveWordCup.getSortedSummary());
+        //assert order
     }
 
     @Test
@@ -141,6 +144,7 @@ class LiveWordCupTest {
         liveWordCup.updateMatch("Uruguay",6,"Italy",6);
         liveWordCup.updateMatch("Argentina",3,"Australia",1);
         logger.debug(liveWordCup.getSortedSummary());
+        //assert order
     }
 
 }
