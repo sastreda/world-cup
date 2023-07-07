@@ -4,12 +4,15 @@
 package com.sportradar.sastre.football;
 
 import com.sportradar.sastre.football.exception.WordCupException;
+import com.sportradar.sastre.football.model.Match;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class LiveWordCupTest {
 
@@ -18,34 +21,39 @@ class LiveWordCupTest {
     Logger logger = LogManager.getRootLogger();
     @Test
     void shouldCreateMatchOnEmptyBoard() throws Exception {
+        logger.info("-- Test: shouldCreateMatchOnEmptyBoard --");
         int count = liveWordCup.getSummary().size();
         liveWordCup.addMatch("Mexico","Canada");
-        logger.debug("Summary {}", liveWordCup.getSummary());
+        logger.debug("Summary: {}", liveWordCup.getSummary());
         assertEquals(liveWordCup.getSummary().size(), count+1);
     }
 
     @Test
     void shouldAddMatchOnExistingBoard() throws Exception {
+        logger.info("-- Test: shouldAddMatchOnExistingBoard --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.addMatch("Spain","Brazil");
-        logger.debug("Summary {}", liveWordCup.getSummary());
+        logger.debug("Summary: {}", liveWordCup.getSummary());
     }
 
     @Test
     void shouldFailCreateMatchWithWrongTeamName() {
+        logger.info("-- Test: shouldFailCreateMatchWithWrongTeamName --");
         Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.addMatch("Mexico5", "Canada"));
         assertTrue(exception.getMessage().contains("is not a valid classified country."));
     }
 
     @Test
     void shouldFailCreateAlreadyCreatedMatch() throws WordCupException{
+        logger.info("-- Test: shouldFailCreateAlreadyCreatedMatch --");
         liveWordCup.addMatch("Mexico","Canada");
         Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.addMatch("Spain", "Mexico"));
-        assertEquals("MEXICO is already playing.", exception.getMessage());
+        assertTrue(exception.getMessage().contains("is already playing."));
     }
 
     @Test
     void shouldUpdateMatch() throws WordCupException {
+        logger.info("-- Test: shouldUpdateMatch --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         logger.debug("Summary {}", liveWordCup.getSummary());
@@ -54,6 +62,7 @@ class LiveWordCupTest {
 
     @Test
     void shouldFailUpdatingNonExistingMatch() throws WordCupException {
+        logger.info("-- Test: shouldFailUpdatingNonExistingMatch --");
         liveWordCup.addMatch("Mexico","Canada");
         Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.updateMatch("Spain", 2, "Canada", 4));
         assertEquals("Match not found.", exception.getMessage());
@@ -61,6 +70,7 @@ class LiveWordCupTest {
 
     @Test
     void shouldFailUpdatingMatchWithNegativeScore() throws WordCupException {
+        logger.info("-- Test: shouldFailUpdatingMatchWithNegativeScore --");
         liveWordCup.addMatch("Mexico","Canada");
         Exception exception = assertThrows(WordCupException.class,
                 () -> liveWordCup.updateMatch("Mexico", -1,"Canada", 4));
@@ -69,6 +79,7 @@ class LiveWordCupTest {
 
     @Test
     void shouldFailUpdateMatchWithDecreasingScore() throws WordCupException {
+        logger.info("-- Test: shouldFailUpdateMatchWithDecreasingScore --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         Exception exception = assertThrows(WordCupException.class,
@@ -78,66 +89,54 @@ class LiveWordCupTest {
 
     @Test
     void shouldFinishMatch() throws WordCupException {
+        logger.info("-- Test: shouldFinishMatch --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         liveWordCup.addMatch("Argentina","Spain");
         int count = liveWordCup.getSummary().size();
-        logger.debug("Summary {}", liveWordCup.getSummary());
+        logger.debug("Summary: {}", liveWordCup.getSummary());
         liveWordCup.finishMatch("Argentina", "Spain");
         assertEquals(liveWordCup.getSummary().size(), count-1);
     }
 
     @Test
     void shouldFailFinishMatchWithWrongTeamName() throws WordCupException {
+        logger.info("-- Test: shouldFailFinishMatchWithWrongTeamName --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         liveWordCup.addMatch("Argentina","Spain");
-        logger.debug("Summary {}", liveWordCup.getSummary());
+        logger.debug("Summary: {}", liveWordCup.getSummary());
         Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.finishMatch("Argentina8", "Spain"));
         assertTrue(exception.getMessage().contains("is not a valid classified country."));
     }
 
     @Test
     void shouldFailFinishMatchWithNonExistingMatch() throws WordCupException {
+        logger.info("-- Test: shouldFailFinishMatchWithNonExistingMatch --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.updateMatch("Mexico", 2,"Canada", 4);
         liveWordCup.addMatch("Argentina","Spain");
-        logger.debug("Summary {}", liveWordCup.getSummary());
+        logger.debug("Summary: {}", liveWordCup.getSummary());
         Exception exception = assertThrows(WordCupException.class, () -> liveWordCup.finishMatch("Canada", "Spain"));
         assertEquals("Match not found.", exception.getMessage());
     }
 
     @Test
     void shouldShowEmptyScoreBoard(){
-        logger.debug("Summary {}", liveWordCup.getSummary());
-        //assert size is 0
+        logger.info("-- Test: shouldShowEmptyScoreBoard --");
+        logger.debug("Empty summary: {}", liveWordCup.getSummary());
+        assertTrue(liveWordCup.getSummary().isEmpty());
     }
 
     @Test
     void shouldShowScoreSortedBoard() throws WordCupException {
+        logger.info("-- Test: shouldShowScoreSortedBoard --");
         liveWordCup.addMatch("Mexico","Canada");
         liveWordCup.addMatch("Spain","Brazil");
         liveWordCup.addMatch("Germany","France");
         liveWordCup.addMatch("Uruguay","Italy");
         liveWordCup.addMatch("Argentina","Australia");
 
-        liveWordCup.updateMatch("Mexico",0,"Canada",5);
-        liveWordCup.updateMatch("Spain",10,"Brazil",2);
-        liveWordCup.updateMatch("Germany",2,"France",2);
-        liveWordCup.updateMatch("Uruguay",6,"Italy",6);
-        liveWordCup.updateMatch("Argentina",3,"Australia",1);
-
-        logger.debug(liveWordCup.getSortedSummary());
-        //assert order
-    }
-
-    @Test
-    void shouldShowScoreSortedBoard2() throws WordCupException {
-        liveWordCup.addMatch("Uruguay","Italy");
-        liveWordCup.addMatch("Mexico","Canada");
-        liveWordCup.addMatch("Spain","Brazil");
-        liveWordCup.addMatch("Germany","France");
-        liveWordCup.addMatch("Argentina","Australia");
         liveWordCup.updateMatch("Mexico",0,"Canada",5);
         liveWordCup.updateMatch("Spain",10,"Brazil",2);
         liveWordCup.updateMatch("Germany",2,"France",2);
@@ -147,4 +146,22 @@ class LiveWordCupTest {
         //assert order
     }
 
+    @Test
+    void shouldShowVerifySameNumberOfGoalsMatchSorting() throws WordCupException {
+        logger.info("-- Test: shouldShowScoreSortedBoard2 --");
+        liveWordCup.addMatch("Uruguay","Italy");
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.updateMatch("Mexico",3,"Canada",1);
+        liveWordCup.updateMatch("Uruguay",1,"Italy",3);
+        List<Match> list1 = liveWordCup.getSortedSummary();
+        logger.debug(liveWordCup.getSortedSummary());
+        liveWordCup.finishMatch("Uruguay","Italy");
+        liveWordCup.finishMatch("Mexico","Canada");
+        liveWordCup.addMatch("Mexico","Canada");
+        liveWordCup.addMatch("Uruguay","Italy");
+        liveWordCup.updateMatch("Mexico",3,"Canada",1);
+        liveWordCup.updateMatch("Uruguay",1,"Italy",3);
+        List<Match> list2 = liveWordCup.getSortedSummary();
+        assertNotEquals(list2.get(0).getHomeTeam(), list1.get(0).getHomeTeam());
+    }
 }

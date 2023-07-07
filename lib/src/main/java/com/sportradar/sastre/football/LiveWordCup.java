@@ -23,45 +23,55 @@ public class LiveWordCup {
     private final List<Match> summary = new ArrayList<>();
 
     public void addMatch(String homeTeam, String awayTeam) throws WordCupException {
-        logger.debug("add new match between {} and {}", homeTeam, awayTeam);
-        logger.debug("sumary: {}", summary);
+        logger.info("add new match between {} and {}", homeTeam, awayTeam);
         Country homeCountryTeam = validateAndReturnCountry(homeTeam);
         Country awayCountryTeam = validateAndReturnCountry(awayTeam);
         if (!homeCountryTeam.equals(awayCountryTeam)) {
             summary.add(new Match(homeCountryTeam, awayCountryTeam));
-            logger.debug("The game between {} and {} has already started", homeTeam, awayTeam);
+            logger.debug("The game between {} and {} starts now.", homeTeam, awayTeam);
         } else {
-            throw new WordCupException("one country cannot play against itself");
+            WordCupException exception = new WordCupException("one country cannot play against itself");
+            logger.info(exception);
+            throw exception;
         }
     }
 
     public void updateMatch(String homeTeam, int homeScore, String awayTeam, int awayScore) throws WordCupException {
+        logger.info("update Match to {} {} : {} {}", homeTeam, homeScore, awayTeam, awayScore);
         try {
             Match match = findMatch(homeTeam, awayTeam);
             validateScores(homeScore, awayScore, match);
             match.setHomeScore(homeScore);
             match.setAwayScore(awayScore);
         } catch (NoSuchElementException nsee) {
-            throw new WordCupException("Match not found.");
+            WordCupException exception = new WordCupException("Match not found.");
+            logger.info(exception);
+            throw exception;
         }
     }
 
     public void finishMatch(String homeTeam, String awayTeam) throws WordCupException {
+        logger.info("finish Match between {} and {}", homeTeam, awayTeam);
         try {
             summary.remove(findMatch(homeTeam, awayTeam));
         } catch (NoSuchElementException nsee) {
-            throw new WordCupException("Match not found.");
+            WordCupException exception = new WordCupException("Match not found.");
+            logger.info(exception);
+            throw exception;
         }
     }
 
     public List<Match> getSortedSummary(){
+        logger.info("get sorted Live Score");
         return summary.stream().sorted().toList();
     }
 
     private Country validateAndReturnCountry(String countryString) throws WordCupException {
         Country country = validateCountryStringAndReturnCountry(countryString);
         if (summary.stream().anyMatch(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))) {
-            throw new WordCupException(country + " is already playing.");
+            WordCupException exception = new WordCupException(country + " is already playing.");
+            logger.info(exception);
+            throw exception;
         }
         return country;
     }
@@ -77,16 +87,22 @@ public class LiveWordCup {
         try {
             return Country.valueOf(countryString.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new WordCupException(countryString + " is not a valid classified country.");
+            WordCupException exception = new WordCupException(countryString + " is not a valid classified country.");
+            logger.info(exception);
+            throw exception;
         }
     }
 
     private void validateScores(int homeScore, int awayScore, Match match) throws WordCupException {
         if (Integer.signum(homeScore) == -1 || Integer.signum(awayScore) == -1) {
-            throw new WordCupException("Scores cannot be negative.");
+            WordCupException exception = new WordCupException("Scores cannot be negative.");
+            logger.info(exception);
+            throw exception;
         }
         if (match.getHomeScore() > homeScore || match.getAwayScore() > awayScore) {
-            throw new WordCupException("Scores cannot decrease.");
+            WordCupException exception =  new WordCupException("Scores cannot decrease.");
+            logger.info(exception);
+            throw exception;
         }
     }
 }
