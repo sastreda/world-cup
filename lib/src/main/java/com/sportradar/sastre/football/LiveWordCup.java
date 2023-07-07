@@ -77,8 +77,7 @@ public class LiveWordCup {
 
     private Country validateAndReturnCountry(String countryString) throws WordCupException {
         Country country = validateCountryStringAndReturnCountry(countryString);
-        if (summary.stream().filter(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))
-                .findFirst().isPresent()) {
+        if (summary.stream().anyMatch(m -> m.getHomeTeam().equals(country) || m.getAwayTeam().equals(country))) {
             throw new WordCupException(country + " is already playing.");
         }
         return country;
