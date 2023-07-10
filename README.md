@@ -7,6 +7,7 @@ only the countries participating in the world cup are.
 it is assumed that one country cannot play two games at the same time
 It is supposed that the score of a team cannot decrease (not considered a goal can be anulled)
 a country cannot play against itself
+It is considered that the score can be changed anytime and the score of a team can be increased by more than one goal.
 
 
 ## Contact
