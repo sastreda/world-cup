@@ -56,7 +56,7 @@ public class Match implements Comparable<Match>{
             return value;
         }
         else {
-            return o.getStartDate().compareTo(startDate);
+            return startDate.compareTo(o.getStartDate());
         }
     }
 }
